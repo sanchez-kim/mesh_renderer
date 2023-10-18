@@ -8,8 +8,7 @@ const PORT = 8000;
 app.use(cors());
 
 // Serve static files
-// app.use("/omotion", express.static("../omotion/3D_data/Model1/Sentence009"));
-app.use("/omotion", express.static("../omotion/3D_data/Model1/Sentence009"));
+app.use("/omotion", express.static("../omotion/3D_data/Model1/Sentence008"));
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

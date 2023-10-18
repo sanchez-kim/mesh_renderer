@@ -2,21 +2,26 @@ import * as THREE from "three";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { degToRad } from "three/src/math/MathUtils";
 
+function ensureEven(num) {
+  return num % 2 === 0 ? num : num + 1;
+}
+
+const width = ensureEven(window.innerWidth);
+const height = ensureEven(window.innerHeight);
+
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
+const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
+
+renderer.setSize(width, height);
 renderer.setClearColor(0xffffff);
 document.body.appendChild(renderer.domElement);
 
 camera.position.set(0, 0, 30);
 camera.fov = 90;
+
+camera.aspect = width / height;
 camera.updateProjectionMatrix();
 
 const light = new THREE.DirectionalLight(0xffffff, 2.0);
@@ -36,6 +41,9 @@ function loadAndSaveFrame(frameNum) {
   fetch(baseURL + filename)
     .then((response) => {
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error("No more frames to load.");
+        }
         throw new Error("Network response was not ok");
       }
       return response.text();
@@ -64,10 +72,7 @@ function loadAndSaveFrame(frameNum) {
       downloadImage(img, `frame${paddedFrameNum}.png`);
 
       frameCounter++;
-
-      if (frameCounter < 135) {
-        loadAndSaveFrame(frameCounter);
-      }
+      loadAndSaveFrame(frameCounter);
     })
     .catch((error) => {
       console.log(
